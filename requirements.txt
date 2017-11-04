@@ -1,0 +1,4 @@
+pyasn==1.6.0b1
+ripe.atlas.cousteau==1.4
+ripe.atlas.sagan==1.2.2
+ujson==1.35
