@@ -62,13 +62,19 @@ $(document).ready(function() {
         });
     }
 
-    function get_probes(asn) {
+    function compute_stats_from_probes(asn) {
         $.ajax({
             url: 'https://stat.ripe.net/data/atlas-probes/data.json?resource=' + asn,
             dataType: 'json',
             cache: false
         }).done(function(json) {
-            console.log(json);
+            var probe = pick_probe(json);
+            if (!probe) {
+                alert("No probe found in this ASN, sorry");
+                return;
+            }
+            console.log(probe);
+            // Do something with probe.prefix_v4 and probe.prefix_v6
         });
     }
 
@@ -89,13 +95,7 @@ $(document).ready(function() {
 
         // Get ASN data
         var asn = $('#asn').val();
-        var data = get_probes(asn);
-        var probe = pick_probe(data);
-        if (!probe) {
-            alert("No probe found in this ASN, sorry");
-            return;
-        }
-        // Do something with probe.prefix_v4 and probe.prefix_v6
+        compute_stats_from_probes(asn);
     });
 
 });
