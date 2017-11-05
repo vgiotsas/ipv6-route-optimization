@@ -1,0 +1,1 @@
+#ASN num_v4adj num_v6adj num_intersect(v4v6adj) num_union(adj) fr_v4(num_intersect/num_v4adj) fr_v6(num_intersect/num_v6adj) fr_intersect(num_intersect/num_union)
