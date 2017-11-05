@@ -82,7 +82,7 @@ $(document).ready(function() {
 
         var options = {
             title: 'Comparison of AS-path length towards AS ' + target_asn + ', for each of its transit providers (neighbouring AS)',
-            chartArea: {width: '70%', height: '100%'},
+            chartArea: {width: '70%', height: '90%'},
             height: height,
             colors: ['#b0120a', '#ffab91'],
             hAxis: {
