@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>AS Paths</title>
+    <title>AS statistics</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="static/bootstrap.min.css">
     <link rel="stylesheet" href="static/app.css">
@@ -14,7 +14,7 @@
 
       <div class="row">
         <div class="col-md-12">
-          <h2>AS Paths</h2>
+          <h2>AS statistics</h2>
         </div>
       </div>
 
@@ -22,17 +22,51 @@
 
       <div class="card">
         <div class="card-body">
+          <p>
+            This web application computes and displays statistics about an
+            AS, using BGP data from
+            <a href="https://www.ripe.net/analyse/internet-measurements/routing-information-service-ris">RIS</a>.<br />
+            The goal is to compare the IPv4 and IPv6 connectivity of an AS.
+          </p>
+          <p>It was created during the <a href="https://labs.ripe.net/Members/becha/join-the-ripe-ncc-hackathon-version-6">RIPE IPv6 hackathon</a> in Copenhagen, 4-5 November 2017.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-body">
+          <h3>Simple interface</h3>
+          <form id="form-asn" name="form-asn">
+            <div class="form-group">
+              <label for="asn">AS Number</label>
+              <input type="text" class="form-control" id="asn" aria-describedby="AS number" placeholder="3333">
+            </div>
+            <button type="submit" class="btn btn-primary">Compute statistics</button>
+          </form>
+          <p>This tool will look
+          for <a href="https://atlas.ripe.net">Atlas probes</a> in the
+          given AS, and use them to compute colocated IPv4 and IPv6
+          prefixes.  It then computes statistics on the BGP reachability
+          of these prefixes.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-body">
+          <h3>Advanced interface</h3>
           <form id="form-prefixes" name="form-prefixes">
             <div class="form-group">
               <label for="ipv4-prefix">IPv4 Prefix</label>
-              <input type="text" class="form-control" id="ipv4-prefix" aria-describedby="IPv4 Prefix" placeholder="IPv4 Prefix">
+              <input type="text" class="form-control" id="ipv4-prefix" aria-describedby="IPv4 Prefix" placeholder="192.0.2.0/24">
             </div>
             <div class="form-group">
               <label for="ipv6-prefix">IPv6 Prefix</label>
-              <input type="text" class="form-control" id="ipv6-prefix" aria-describedby="IPv6 Prefix" placeholder="IPv6 Prefix">
+              <input type="text" class="form-control" id="ipv6-prefix" aria-describedby="IPv6 Prefix" placeholder="2001:db8::/32">
             </div>
-            <button type="submit" class="btn btn-primary">Get</button>
+            <button type="submit" class="btn btn-primary">Compute statistics</button>
           </form>
+          <p>This tool will directly compare BGP reachability of the two
+          prefixes.  For a meaningful comparison, they should be
+          "colocated" prefixes, i.e. be announced by the same BGP router.</p>
         </div>
       </div>
 
@@ -46,7 +80,7 @@
     </div>
 
     <script src="static/jquery.min.js"></script>
-    <script src="static/underscore.min.js"></script
+    <script src="static/underscore-min.js"></script>
     <script src="static/app.js"></script>
   </body>
 </html>
