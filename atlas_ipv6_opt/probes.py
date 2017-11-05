@@ -8,11 +8,13 @@ from ripe.atlas.cousteau import (
     AtlasSource,
     AtlasCreateRequest)
 
-probes_file = 'data/20171103.json.bz2'   # Probe list from http://ftp.ripe.net/ripe/atlas/probes/archive/meta-latest
+# Probe list from http://ftp.ripe.net/ripe/atlas/probes/archive/meta-latest
+probes_file = 'data/20171103.json.bz2'
+
 debug = True
 API_KEY = os.getenv('RIPE_API')
 
-tags = ('system-ipv6-works', 'system-ipv4-works', 'system-ipv4-stable-1d')
+wanted_tags = ('system-ipv6-works', 'system-ipv4-works', 'system-ipv4-stable-1d')
 
 
 def load_json():
@@ -20,10 +22,11 @@ def load_json():
     probes_blob = ujson.loads(bz2.BZ2File(probes_file).read())
     for probe in probes_blob['objects']:
         missing_tag = False
-        for tag in tags:
+        for tag in wanted_tags:
             if tag not in probe['tags']:
                 missing_tag = True
         if missing_tag:
+            # skip this probe
             continue
         elif probe['is_public'] is True and probe['asn_v4'] == probe['asn_v6'] \
                 and probe['address_v4'] is not None and probe['address_v6'] is not None:
@@ -38,6 +41,10 @@ def load_json():
 
 
 def create_measurements(probes, target):
+    '''
+    Create two new ICMP traceroute measurements, one for the IPv4 target address
+    and one for the IPv6.
+    '''
     num_probes = len(probes)
 
     sources = AtlasSource(
