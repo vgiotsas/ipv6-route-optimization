@@ -47,9 +47,18 @@ $(document).ready(function() {
                      average_length_v6: stats.average_length };
         });
         var all_asn = _.uniq(_.flatten([_.keys(v4), _.keys(v6)]));
-        var all_asn_object = _.object(all_asn, all_asn);
-        console.log(all_asn);
-        return _.mapObject(all_asn_object, function(asn) {
+        /* Filter out ASNs that have very few AS paths. */
+        var filtered_asn = _.filter(all_asn, function(asn) {
+            if (!(asn in v4)) {
+                return (v6[asn].count_v6 >= 3);
+            } else if (!(asn in v6)) {
+                return (v4[asn].count_v4 >= 3);
+            } else {
+                return (v4[asn].count_v4 >= 3) || (v6[asn].count_v6 >= 3);
+            }
+        });
+        var filtered_asn_object = _.object(filtered_asn, filtered_asn);
+        return _.mapObject(filtered_asn_object, function(asn) {
             /* Handle ASN that only appears in either v4 or v6 */
             if (!(asn in v4)) {
                 return v6[asn];
