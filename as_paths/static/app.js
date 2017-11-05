@@ -142,8 +142,8 @@ $(document).ready(function() {
                 _.map(as_list, function(x) {
                     k = x[0];
                     v = x[1];
-                    data.push([k, v.average_length_v4, 'Average AS-path length over ' + v.count_v4 + ' AS paths: ' + toFixedRobust(v.average_length_v4, 2),
-                               v.average_length_v6, 'Average AS-path length over ' + v.count_v6 + ' AS paths: ' + toFixedRobust(v.average_length_v6, 2)]);
+                    data.push([k, v.average_length_v4, 'Average AS-path length over ' + v.count_v4 + ' IPv4 AS paths: ' + toFixedRobust(v.average_length_v4, 2),
+                               v.average_length_v6, 'Average AS-path length over ' + v.count_v6 + ' IPv6 AS paths: ' + toFixedRobust(v.average_length_v6, 2)]);
                 });
                 draw_charts(target_asn, data);
             });
