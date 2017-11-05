@@ -1,5 +1,8 @@
 $(document).ready(function() {
 
+    $('#bgp-length-card').hide();
+    $('#bgp-adjacency-card').hide();
+
     google.charts.load('current', {packages: ['corechart', 'bar']});
 
     function toFixedRobust(number, precision) {
@@ -169,6 +172,7 @@ $(document).ready(function() {
             } else {
                 $('#alert-adjacency').show();
                 $('#alert-adjacency').text('AS ' + asn + ' not found in RIS data, sorry.');
+                $('#adjacency-scores').text("");
             }
         });
     }
@@ -192,6 +196,8 @@ $(document).ready(function() {
 
     $('#form-prefixes button[type="submit"]').on('click', function(e) {
         e.preventDefault();
+        $('#bgp-length-card').show();
+        $('#bgp-adjacency-card').hide();
 
         // Get IP data
         var ipv6_prefix = $('#ipv6-prefix').val();
@@ -201,6 +207,8 @@ $(document).ready(function() {
 
     $('#form-asn button[type="submit"]').on('click', function(e) {
         e.preventDefault();
+        $('#bgp-length-card').show();
+        $('#bgp-adjacency-card').show();
 
         // Get ASN data
         var asn = $('#asn').val();
