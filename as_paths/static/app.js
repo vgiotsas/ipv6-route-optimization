@@ -137,7 +137,8 @@ $(document).ready(function() {
         }).done(function(json) {
             var probe = pick_probe(json);
             if (!probe) {
-                alert("No Atlas probe found in this ASN, sorry");
+                $('#alert-probe').show();
+                $('#alert-probe').text('No Atlas probe found in this ASN, sorry')
                 return;
             }
             get_data(probe.prefix_v4, probe.prefix_v6);
@@ -158,6 +159,7 @@ $(document).ready(function() {
 
         // Get ASN data
         var asn = $('#asn').val();
+        $('#alert-probe').hide();
         compute_stats_from_probes(asn);
     });
 

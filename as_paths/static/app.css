@@ -29,6 +29,12 @@ body {
     margin-bottom: 20px;
 }
 
+.alert-probe {
+    display: none;
+    font-size: .9em;
+    margin-top: 5px;
+}
+
 .loading {
     display: none;
     text-align: center;
