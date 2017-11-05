@@ -1,6 +1,6 @@
 $(document).ready(function() {
 
-    var as = [];
+    google.charts.load('current', {packages: ['corechart', 'bar']});
 
     function average_length(as_paths) {
         var sum = 0
@@ -61,6 +61,25 @@ $(document).ready(function() {
         });
     }
 
+    function draw_charts(as) {
+        var data = google.visualization.arrayToDataTable(as);
+
+        var options = {
+            title: 'AS Paths',
+            chartArea: {width: '80%'},
+            colors: ['#b0120a', '#ffab91'],
+            hAxis: {
+                title: 'Average Lengths',
+                minValue: 0
+            },
+            vAxis: {
+                title: 'AS'
+            }
+        };
+        var chart = new google.visualization.BarChart(document.getElementById('chart'));
+        chart.draw(data, options);
+    }
+
     function get_data(ipv6_prefix, ipv4_prefix) {
         $.ajax({
             url: 'https://stat.ripe.net/data/looking-glass/data.json?resource=' + ipv6_prefix,
@@ -85,10 +104,13 @@ $(document).ready(function() {
                         ipv4_as_paths.push(entries.as_path);
                     });
                 });
-                var ipv6_as = compute_statistics(ipv6_as_paths);
-                var ipv4_as = compute_statistics(ipv4_as_paths);
-                console.log(ipv6_as);
-                console.log(ipv4_as);
+                var as_obj = merge_statistics(compute_statistics(ipv4_as_paths), compute_statistics(ipv6_as_paths));
+                var data = []
+                data.push(['AS', 'IPv4', 'IPv6']);
+                $.each(as_obj, function(k, v) {
+                    data.push([k, v.average_length_v4, v.average_length_v6]);
+                });
+                draw_charts(data);
             });
         });
     }
@@ -126,4 +148,10 @@ $(document).ready(function() {
         compute_stats_from_probes(asn);
     });
 
+    var $loading = $('#loading').hide();
+    $(document).ajaxStart(function () {
+        $loading.show();
+    }).ajaxStop(function () {
+        $loading.hide();
+    });
 });

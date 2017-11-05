@@ -1,7 +1,41 @@
+html, body {
+    height: 100%;
+}
+
 body {
     font-family: 'Open Sans', sans-serif;
 }
 
+.page-wrap {
+    min-height: 100%;
+    margin-bottom: -42px;
+}
+
+.page-wrap:after {
+    content: '';
+    display: block;
+}
+
+.footer,
+.page-wrap:after {
+    height: 42px;
+}
+
 .card {
     margin-top: 20px;
+}
+
+.chart {
+    margin-bottom: 20px;
+}
+
+.loading {
+    display: none;
+    text-align: center;
+}
+
+.footer {
+    border-top: 1px solid lightgray;
+    font-size: .9em;
+    text-align: center;
 }
