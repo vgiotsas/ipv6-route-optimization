@@ -94,8 +94,10 @@ def get_probe_details(probe_id):
 
 def parse_args(args=sys.argv[1:]):
     parser = argparse.ArgumentParser()
-    parser.add_argument('measurementv4', help='Atlas measurement ID for IPv4')
-    parser.add_argument('measurementv6', help='Atlas measurement ID for IPv6')
+    parser.add_argument('measurementv4', type=int,
+                        help='Atlas measurement ID for IPv4')
+    parser.add_argument('measurementv6', type=int,
+                        help='Atlas measurement ID for IPv6')
     return parser.parse_args()
 
 
