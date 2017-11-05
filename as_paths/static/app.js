@@ -61,11 +61,11 @@ $(document).ready(function() {
         /* Filter out ASNs that have very few AS paths. */
         var filtered_asn = _.filter(all_asn, function(asn) {
             if (!(asn in v4)) {
-                return (v6[asn].count_v6 >= 3);
+                return (v6[asn].count_v6 >= 6);
             } else if (!(asn in v6)) {
-                return (v4[asn].count_v4 >= 3);
+                return (v4[asn].count_v4 >= 6);
             } else {
-                return (v4[asn].count_v4 >= 3) || (v6[asn].count_v6 >= 3);
+                return (v4[asn].count_v4 >= 6) || (v6[asn].count_v6 >= 6);
             }
         });
         var filtered_asn_object = _.object(filtered_asn, filtered_asn);
