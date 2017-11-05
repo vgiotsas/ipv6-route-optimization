@@ -155,7 +155,7 @@ $(document).ready(function() {
 
     function show_adjacency_score(asn) {
         $.ajax({
-            url: '/data/ladjscore.20170701.json',
+            url: 'data/ladjscore.20170701.json',
             dataType: 'json',
             cache: true
         }).done(function(json) {
