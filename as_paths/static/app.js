@@ -125,11 +125,10 @@ $(document).ready(function() {
                 });
                 var target_asn = get_target_asn(json_v4);
                 var as_obj = merge_statistics(compute_statistics(ipv4_as_paths), compute_statistics(ipv6_as_paths));
-                console.log(as_obj);
-                var data = [];
-                data.push(['AS', 'IPv4', 'IPv6']);
+                var data = []
+                data.push(['AS', 'IPv4', {type: 'string', role: 'tooltip'}, 'IPv6', {type: 'string', role: 'tooltip'}]);
                 $.each(as_obj, function(k, v) {
-                    data.push([k, v.average_length_v4, v.average_length_v6]);
+                    data.push([k, v.average_length_v4, v.count_v4, v.average_length_v6, v.count_v6]);
                 });
                 draw_charts(target_asn, data);
             });
