@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import argparse
 import requests
 import time
 import sys
@@ -91,15 +92,18 @@ def get_probe_details(probe_id):
     return results
 
 
+def parse_args(args=sys.argv[1:]):
+    parser = argparse.ArgumentParser()
+    parser.add_argument('measurementv4', help='Atlas measurement ID for IPv4')
+    parser.add_argument('measurementv6', help='Atlas measurement ID for IPv6')
+    return parser.parse_args()
+
+
 def main():
 
-    try:
-        measurements = sys.argv[1:]
-    except:
-        print('Please provide a [list] of measurements')
-        exit(1)
+    args = parse_args()
 
-    results = fetch_results(measurements)
+    results = fetch_results([args.measurementv4, args.measurementv6])
     while len(results[4]) != len(results[6]):
         if debug:
             for af in results:
