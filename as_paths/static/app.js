@@ -35,6 +35,18 @@ $(document).ready(function() {
         }
     }
 
+    /* Given per-neighbouring-AS statistics for IPv4 and IPv6, returns
+     * combined statistics. */
+    function merge_statistics(v4_stats, v6_stats) {
+        return _.map(v4_stats, function(stats, asn) {
+            return { count_v4: stats.count,
+                     count_v6: v6_stats[asn].count,
+                     average_length_v4: stats.average_length,
+                     average_length_v6: v6_stats[asn].average_length
+                   }
+        })
+    }
+
     function get_data(ipv6_prefix, ipv4_prefix) {
         $.ajax({
             url: 'https://stat.ripe.net/data/looking-glass/data.json?resource=' + ipv6_prefix,
@@ -75,7 +87,7 @@ $(document).ready(function() {
         }).done(function(json) {
             var probe = pick_probe(json);
             if (!probe) {
-                alert("No probe found in this ASN, sorry");
+                alert("No Atlas probe found in this ASN, sorry");
                 return;
             }
             console.log(probe);
