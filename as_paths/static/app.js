@@ -1,5 +1,8 @@
 $(document).ready(function() {
 
+    $('#bgp-length-card').hide();
+    $('#bgp-adjacency-card').hide();
+
     google.charts.load('current', {packages: ['corechart', 'bar']});
 
     function toFixedRobust(number, precision) {
@@ -61,11 +64,11 @@ $(document).ready(function() {
         /* Filter out ASNs that have very few AS paths. */
         var filtered_asn = _.filter(all_asn, function(asn) {
             if (!(asn in v4)) {
-                return (v6[asn].count_v6 >= 3);
+                return (v6[asn].count_v6 >= 6);
             } else if (!(asn in v6)) {
-                return (v4[asn].count_v4 >= 3);
+                return (v4[asn].count_v4 >= 6);
             } else {
-                return (v4[asn].count_v4 >= 3) || (v6[asn].count_v6 >= 3);
+                return (v4[asn].count_v4 >= 6) || (v6[asn].count_v6 >= 6);
             }
         });
         var filtered_asn_object = _.object(filtered_asn, filtered_asn);
@@ -128,12 +131,22 @@ $(document).ready(function() {
                     });
                 });
                 var target_asn = get_target_asn(json_v4);
-                var as_obj = merge_statistics(compute_statistics(ipv4_as_paths), compute_statistics(ipv6_as_paths));
+                var as_obj_unsorted = _.pairs(merge_statistics(compute_statistics(ipv4_as_paths), compute_statistics(ipv6_as_paths)));
+                var as_list = _.sortBy(as_obj_unsorted, function(x) {
+                    if (!("count_v4" in x[1]))
+                        return x[1].count_v6;
+                    else if (!("count_v6" in x[1]))
+                        return x[1].count_v4;
+                    else
+                        return x[1].count_v4 + x[1].count_v6;
+                }).reverse();
                 var data = []
                 data.push(['AS', 'IPv4', {type: 'string', role: 'tooltip'}, 'IPv6', {type: 'string', role: 'tooltip'}]);
-                $.each(as_obj, function(k, v) {
-                    data.push([k, v.average_length_v4, 'Average AS-path length over ' + v.count_v4 + ' AS paths: ' + toFixedRobust(v.average_length_v4, 2),
-                               v.average_length_v6, 'Average AS-path length over ' + v.count_v6 + ' AS paths: ' + toFixedRobust(v.average_length_v6, 2)]);
+                _.map(as_list, function(x) {
+                    k = x[0];
+                    v = x[1];
+                    data.push([k, v.average_length_v4, 'Average AS-path length over ' + v.count_v4 + ' IPv4 AS paths: ' + toFixedRobust(v.average_length_v4, 2),
+                               v.average_length_v6, 'Average AS-path length over ' + v.count_v6 + ' IPv6 AS paths: ' + toFixedRobust(v.average_length_v6, 2)]);
                 });
                 draw_charts(target_asn, data);
             });
@@ -142,7 +155,7 @@ $(document).ready(function() {
 
     function show_adjacency_score(asn) {
         $.ajax({
-            url: '/data/ladjscore.20170701.json',
+            url: 'data/ladjscore.20170701.json',
             dataType: 'json',
             cache: true
         }).done(function(json) {
@@ -159,6 +172,7 @@ $(document).ready(function() {
             } else {
                 $('#alert-adjacency').show();
                 $('#alert-adjacency').text('AS ' + asn + ' not found in RIS data, sorry.');
+                $('#adjacency-scores').text("");
             }
         });
     }
@@ -182,6 +196,8 @@ $(document).ready(function() {
 
     $('#form-prefixes button[type="submit"]').on('click', function(e) {
         e.preventDefault();
+        $('#bgp-length-card').show();
+        $('#bgp-adjacency-card').hide();
 
         // Get IP data
         var ipv6_prefix = $('#ipv6-prefix').val();
@@ -191,6 +207,8 @@ $(document).ready(function() {
 
     $('#form-asn button[type="submit"]').on('click', function(e) {
         e.preventDefault();
+        $('#bgp-length-card').show();
+        $('#bgp-adjacency-card').show();
 
         // Get ASN data
         var asn = $('#asn').val();
