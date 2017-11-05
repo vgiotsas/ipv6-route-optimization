@@ -126,7 +126,8 @@ $(document).ready(function() {
                 var data = []
                 data.push(['AS', 'IPv4', {type: 'string', role: 'tooltip'}, 'IPv6', {type: 'string', role: 'tooltip'}]);
                 $.each(as_obj, function(k, v) {
-                    data.push([k, v.average_length_v4, v.count_v4, v.average_length_v6, v.count_v6]);
+                    data.push([k, v.average_length_v4, 'Average AS-path length over ' + v.count_v4 + ' AS paths: ' + v.average_length_v4.toFixed(2),
+                               v.average_length_v6, 'Average AS-path length over ' + v.count_v6 + ' AS paths: ' + v.average_length_v6.toFixed(2)]);
                 });
                 draw_charts(target_asn, data);
             });
