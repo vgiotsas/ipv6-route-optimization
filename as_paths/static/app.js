@@ -1,5 +1,7 @@
 $(document).ready(function() {
 
+    var as = [];
+
     function average_length(as_paths) {
         var sum = 0
         for( var i = 0; i < as_paths.length; i++ ){
@@ -33,32 +35,35 @@ $(document).ready(function() {
         }
     }
 
-
-    function get_data(prefix, type='ipv4-prefix') {
+    function get_data(ipv6_prefix, ipv4_prefix) {
         $.ajax({
-            url: 'https://stat.ripe.net/data/looking-glass/data.json?resource=' + prefix,
+            url: 'https://stat.ripe.net/data/looking-glass/data.json?resource=' + ipv6_prefix,
             dataType: 'json',
             cache: false
         }).done(function(json) {
-            if (type=='ipv6-prefix') {
-                var ipv6_as_paths = [];
-                $.each(json.data.rrcs, function(k, rrc) {
-                    $.each(rrc.entries, function(k, entries) {
-                        ipv6_as_paths.push(entries.as_path);
-                    });
+            var ipv6_as_paths = [];
+            var ipv4_as_paths = [];
+
+            $.each(json.data.rrcs, function(k, rrc) {
+                $.each(rrc.entries, function(k, entries) {
+                    ipv6_as_paths.push(entries.as_path);
                 });
-                var ipv6_as = compute_statistics(ipv6_as_paths);
-                console.log(ipv6_as);
-            } else {
-                var ipv4_as_paths = [];
+            });
+            $.ajax({
+                url: 'https://stat.ripe.net/data/looking-glass/data.json?resource=' + ipv4_prefix,
+                dataType: 'json',
+                cache: false
+            }).done(function(json) {
                 $.each(json.data.rrcs, function(k, rrc) {
                     $.each(rrc.entries, function(k, entries) {
                         ipv4_as_paths.push(entries.as_path);
                     });
                 });
+                var ipv6_as = compute_statistics(ipv6_as_paths);
                 var ipv4_as = compute_statistics(ipv4_as_paths);
+                console.log(ipv6_as);
                 console.log(ipv4_as);
-            }
+            });
         });
     }
 
@@ -81,13 +86,10 @@ $(document).ready(function() {
     $('#form-prefixes button[type="submit"]').on('click', function(e) {
         e.preventDefault();
 
-        // Get IPv4 data
-        var ipv4_prefix = $('#ipv4-prefix').val();
-        get_data(ipv4_prefix, type='ipv4-prefix');
-
-        // // Get IPv6 data
+        // Get IP data
         var ipv6_prefix = $('#ipv6-prefix').val();
-        get_data(ipv4_prefix, type='ipv6-prefix');
+        var ipv4_prefix = $('#ipv4-prefix').val();
+        get_data(ipv6_prefix, ipv4_prefix);
     });
 
     $('#form-asn button[type="submit"]').on('click', function(e) {
