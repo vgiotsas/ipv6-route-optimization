@@ -22,6 +22,11 @@ $(document).ready(function() {
         return groups_stats;
     }
 
+    /* Extract the target ASN of the given set of AS paths */
+    function get_target_asn(ris_data) {
+        return _.values(ris_data.data.rrcs)[0].entries[0].originating_as;
+    }
+
     /* Given JSON data from the RIPE API with a list of probes, only keep
      * probes that have the same IPv4 and IPv6 ASN, and try to pick a
      * connected probe (by taking the most recently connected one) */
@@ -70,22 +75,22 @@ $(document).ready(function() {
         });
     }
 
-    function draw_charts(as) {
-        var data = google.visualization.arrayToDataTable(as);
+    function draw_charts(target_asn, raw_data) {
+        var data = google.visualization.arrayToDataTable(raw_data);
 
-        var height = as.length * 60;
+        var height = raw_data.length * 60;
 
         var options = {
-            title: 'AS Paths',
+            title: 'Comparison of AS-path length towards AS ' + target_asn + ', for each of its transit providers (neighbouring AS)',
             chartArea: {width: '70%', height: '100%'},
             height: height,
             colors: ['#b0120a', '#ffab91'],
             hAxis: {
-                title: 'Average Lengths',
+                title: 'Average AS-path length (smaller is better)',
                 minValue: 0
             },
             vAxis: {
-                title: 'AS'
+                title: 'Neighbouring AS'
             }
         };
         var chart = new google.visualization.BarChart(document.getElementById('chart'));
@@ -99,11 +104,11 @@ $(document).ready(function() {
             url: 'https://stat.ripe.net/data/looking-glass/data.json?resource=' + ipv6_prefix,
             dataType: 'json',
             cache: false
-        }).done(function(json) {
+        }).done(function(json_v6) {
             var ipv6_as_paths = [];
             var ipv4_as_paths = [];
 
-            $.each(json.data.rrcs, function(k, rrc) {
+            $.each(json_v6.data.rrcs, function(k, rrc) {
                 $.each(rrc.entries, function(k, entries) {
                     ipv6_as_paths.push(entries.as_path);
                 });
@@ -112,19 +117,21 @@ $(document).ready(function() {
                 url: 'https://stat.ripe.net/data/looking-glass/data.json?resource=' + ipv4_prefix,
                 dataType: 'json',
                 cache: false
-            }).done(function(json) {
-                $.each(json.data.rrcs, function(k, rrc) {
+            }).done(function(json_v4) {
+                $.each(json_v4.data.rrcs, function(k, rrc) {
                     $.each(rrc.entries, function(k, entries) {
                         ipv4_as_paths.push(entries.as_path);
                     });
                 });
+                var target_asn = get_target_asn(json_v4);
                 var as_obj = merge_statistics(compute_statistics(ipv4_as_paths), compute_statistics(ipv6_as_paths));
-                var data = []
+                console.log(as_obj);
+                var data = [];
                 data.push(['AS', 'IPv4', 'IPv6']);
                 $.each(as_obj, function(k, v) {
                     data.push([k, v.average_length_v4, v.average_length_v6]);
                 });
-                draw_charts(data);
+                draw_charts(target_asn, data);
             });
         });
     }
