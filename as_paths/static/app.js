@@ -38,7 +38,7 @@ $(document).ready(function() {
     /* Given per-neighbouring-AS statistics for IPv4 and IPv6, returns
      * combined statistics. */
     function merge_statistics(v4_stats, v6_stats) {
-        return _.map(v4_stats, function(stats, asn) {
+        return _.mapObject(v4_stats, function(stats, asn) {
             return { count_v4: stats.count,
                      count_v6: v6_stats[asn].count,
                      average_length_v4: stats.average_length,
