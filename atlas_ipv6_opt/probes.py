@@ -12,8 +12,8 @@ from ripe.atlas.cousteau import (
 debug = True
 dry_run = False
 
-# Probe list from http://ftp.ripe.net/ripe/atlas/probes/archive/meta-latest
-probes_file = 'data/20171103.json.bz2'
+# Fetch a daily archive of probes as querying the API directly takes ages
+probes_file = 'http://ftp.ripe.net/ripe/atlas/probes/archive/meta-latest'
 API_KEY = os.getenv('RIPE_API')
 base_url = 'https://atlas.ripe.net/api/v2/'
 wanted_tags = ('system-ipv6-works', 'system-ipv4-works', 'system-ipv4-stable-1d')
@@ -28,7 +28,10 @@ def check_credits():
 
 def load_json():
     probes = collections.defaultdict(list)
-    probes_blob = ujson.loads(bz2.BZ2File(probes_file).read())
+    if debug:
+        print('Fetching list of probes from %s' % (probes_file))
+    r = requests.get(probes_file)
+    probes_blob = ujson.loads(bz2.decompress(r.content))
     for probe in probes_blob['objects']:
         missing_tag = False
         for tag in wanted_tags:
