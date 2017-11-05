@@ -128,10 +128,20 @@ $(document).ready(function() {
                     });
                 });
                 var target_asn = get_target_asn(json_v4);
-                var as_obj = merge_statistics(compute_statistics(ipv4_as_paths), compute_statistics(ipv6_as_paths));
+                var as_obj_unsorted = _.pairs(merge_statistics(compute_statistics(ipv4_as_paths), compute_statistics(ipv6_as_paths)));
+                var as_list = _.sortBy(as_obj_unsorted, function(x) {
+                    if (!("count_v4" in x[1]))
+                        return x[1].count_v6;
+                    else if (!("count_v6" in x[1]))
+                        return x[1].count_v4;
+                    else
+                        return x[1].count_v4 + x[1].count_v6;
+                }).reverse();
                 var data = []
                 data.push(['AS', 'IPv4', {type: 'string', role: 'tooltip'}, 'IPv6', {type: 'string', role: 'tooltip'}]);
-                $.each(as_obj, function(k, v) {
+                _.map(as_list, function(x) {
+                    k = x[0];
+                    v = x[1];
                     data.push([k, v.average_length_v4, 'Average AS-path length over ' + v.count_v4 + ' AS paths: ' + toFixedRobust(v.average_length_v4, 2),
                                v.average_length_v6, 'Average AS-path length over ' + v.count_v6 + ' AS paths: ' + toFixedRobust(v.average_length_v6, 2)]);
                 });
