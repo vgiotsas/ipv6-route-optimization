@@ -73,9 +73,12 @@ $(document).ready(function() {
     function draw_charts(as) {
         var data = google.visualization.arrayToDataTable(as);
 
+        var height = as.length * 60;
+
         var options = {
             title: 'AS Paths',
-            chartArea: {width: '80%'},
+            chartArea: {width: '70%', height: '100%'},
+            height: height,
             colors: ['#b0120a', '#ffab91'],
             hAxis: {
                 title: 'Average Lengths',
@@ -87,6 +90,8 @@ $(document).ready(function() {
         };
         var chart = new google.visualization.BarChart(document.getElementById('chart'));
         chart.draw(data, options);
+
+        $('html, body').animate({scrollTop: $('#chart').offset().top - 100}, 'slow');
     }
 
     function get_data(ipv6_prefix, ipv4_prefix) {
@@ -158,6 +163,7 @@ $(document).ready(function() {
 
     var $loading = $('#loading').hide();
     $(document).ajaxStart(function () {
+        $('#chart').text('');
         $loading.show();
     }).ajaxStop(function () {
         $loading.hide();
