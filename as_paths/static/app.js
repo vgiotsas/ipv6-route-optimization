@@ -134,12 +134,36 @@ $(document).ready(function() {
         });
     }
 
+    function show_adjacency_score(asn) {
+        $.ajax({
+            url: '/data/ladjscore.20170701.json',
+            dataType: 'json',
+            cache: true
+        }).done(function(json) {
+            $('#adjacency-asn').text(asn);
+            if (asn in json) {
+                $('#alert-adjacency').hide();
+                var scores = json[asn];
+                var text = '';
+                text += '<strong>' + scores.adj_v4 + '</strong> IPv4 peers<br />';
+                text += '<strong>' + scores.adj_v6 + '</strong> IPv6 peers<br />';
+                text += '<strong>' + scores.adj_v4andv6 + '</strong> simultaneous IPv4 + IPv6 peers<br />';
+                text += 'Adjacency score: <strong>' + scores.adj_score.toFixed(2) + '</strong>';
+                $('#adjacency-scores').html(text);
+            } else {
+                $('#alert-adjacency').show();
+                $('#alert-adjacency').text('AS ' + asn + ' not found in RIS data, sorry.');
+            }
+        });
+    }
+
     function compute_stats_from_probes(asn) {
         $.ajax({
             url: 'https://stat.ripe.net/data/atlas-probes/data.json?resource=' + asn,
             dataType: 'json',
             cache: false
         }).done(function(json) {
+            $('#alert-probe').hide();
             var probe = pick_probe(json);
             if (!probe) {
                 $('#alert-probe').show();
@@ -166,6 +190,7 @@ $(document).ready(function() {
         var asn = $('#asn').val();
         $('#alert-probe').hide();
         compute_stats_from_probes(asn);
+        show_adjacency_score(asn);
     });
 
     var $loading = $('#loading').hide();

@@ -33,8 +33,23 @@
 
         <div class="card chart">
           <div class="card-body">
+            <h4>BGP AS-path length</h4>
             <div class="loading" id="loading">loading...</div>
             <div id="chart"></div>
+          </div>
+        </div>
+
+        <div class="card chart">
+          <div class="card-body">
+            <h4>BGP interconnection score for AS <span id="adjacency-asn">X</span></h4>
+            <hr>
+            <div class="alert alert-danger alert-probe" id="alert-adjacency" role="alert"></div>
+            <div id="adjacency-scores"></div>
+            <hr>
+            <p class="small">The score is between 0 and 1, and measures
+              the similarity of IPv4 and IPv6 BGP interconnection.<br/>
+              A score of 1 means that the IPv4 and IPv6 peers are
+              identical.</p>
           </div>
         </div>
 
