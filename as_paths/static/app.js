@@ -95,8 +95,6 @@ $(document).ready(function() {
         };
         var chart = new google.visualization.BarChart(document.getElementById('chart'));
         chart.draw(data, options);
-
-        $('html, body').animate({scrollTop: $('#chart').offset().top - 100}, 'slow');
     }
 
     function get_data(ipv6_prefix, ipv4_prefix) {
