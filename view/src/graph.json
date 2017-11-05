@@ -1,14 +1,22 @@
+{
+"rtt4":"200",
+"rtt6":"300",
+"route4":
 [
 
-   {"id": "192.168.1.0", "nexthop": 1, "group": 0, "rtt": "213"},
-    {"id": "192.168.1.1", "nexthop": 2, "group": 4, "rtt": "213"},
-    {"id": "192.168.1.2", "nexthop": 3, "group": 4, "rtt": "213"},
-    {"id": "192.168.1.3", "nexthop": 4, "group": 4, "rtt": "213"},
-    {"id": "192.168.1.4", "nexthop": 5, "group": 4, "rtt": "213"},
-    {"id": "192.168.1.5", "nexthop": 8, "group": 9, "rtt": "213"},
-
-    {"id": "192.168.2.1", "nexthop": 7, "group": 0, "rtt": "213"},
-    {"id": "192.168.2.1", "nexthop": 8, "group": 6, "rtt": "213"},
-    {"id": "192.168.2.2", "nexthop": 9, "group": 6, "rtt": "213"},
-    {"id": "192.168.2.3", "nexthop": 6, "group": 9, "rtt": "213"}
+   {"id": "100", "nexthop": "100", "group": 0 },
+    {"id": "200", "nexthop": "100", "group": 4 },
+    {"id": "300", "nexthop": "200", "group": 4 },
+    {"id": "400", "nexthop": "300", "group": 4 },
+    {"id": "500", "nexthop": "400", "group": 9 }
   ]
+,
+"route6":
+[
+
+   {"id": "100", "nexthop": "100", "group": 0 },
+    {"id": "300", "nexthop": "100", "group": 6 },
+    {"id": "400", "nexthop": "300", "group": 6 },
+    {"id": "500", "nexthop": "400", "group": 9 }
+   ]
+}

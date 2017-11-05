@@ -18,43 +18,20 @@
 <script src="src/d3-ellipse-force.js"></script>
 <script src="src/jquery-3.2.1.min.js"></script>
 <script>
-    /*
-var graph = {
-  "nodes": [
-    {"id": "192.168.1.1", "group": 1},
-    {"id": "192.168.1.2", "group": 1},
-    {"id": "192.168.1.3", "group": 1},
-    {"id": "192.168.1.4", "group": 1},
-    {"id": "192.168.1.5", "group": 1},
-    {"id": "192.168.1.6", "group": 1},
-    {"id": "192.168.1.7", "group": 1},
-    {"id": "192.168.1.8", "group": 4},
-    {"id": "192.168.1.9", "group": 8}
-  ],
-  "links": [
-    {"source": "192.168.1.1", "target": "192.168.1.1", "value": 1},
-    {"source": "192.168.1.2", "target": "192.168.1.1", "value": 8},
-    {"source": "192.168.1.3", "target": "192.168.1.1", "value": 10},
-    {"source": "192.168.1.4", "target": "192.168.1.1", "value": 6},
-    {"source": "192.168.1.5", "target": "192.168.1.1", "value": 1},
-    {"source": "192.168.1.6", "target": "192.168.1.1", "value": 1}
-  ]
-};
 
-
-*/
 
 $.getJSON( "src/graph.json", function( data ) {
     var  slinks = [];
-    var arr = jQuery.makeArray(data); console.log(arr);
+    var arr = jQuery.makeArray(data.route4);
+    var rtt4 = jQuery.makeArray(data.rtt4);
     var len = arr.length;
     for (i = 0; i < len; i++) {
-        slinks.push({"source": arr[i]['id'], "target": arr[arr[i]['nexthop']]['id'], value: 2});
+        slinks.push({"source": arr[i]['id'], "target": arr[i]['nexthop'], value: 2});
     }
 
 
-var graph = {nodes: arr, links:slinks};
 
+var graph = {nodes: arr, links:slinks};
 
 
 
@@ -67,8 +44,8 @@ var color = d3.scaleOrdinal(d3.schemeCategory20);
 var nd;
 for (var i=0; i<graph.nodes.length; i++) {
   nd = graph.nodes[i];
-  nd.rx = nd.id.length * 4.5;
-  nd.ry = 12;
+  nd.rx = nd.id.length * 4.5 + 10;
+  nd.ry = 16;
 }
 
 var simulation = d3.forceSimulation()
@@ -91,10 +68,16 @@ var node = svg.append("g")
     .attr("rx", function(d) {  return d.rx; })
     .attr("ry", function(d) { return d.ry; })
     .attr("fill", function(d) {  if (d.group == 4) return "#5f97ef"; else if (d.group == 6) return "#60ea3a"; else return "#fc1e89"; })
+
     .call(d3.drag()
         .on("start", dragstarted)
         .on("drag", dragged)
         .on("end", dragended));
+
+
+
+
+
 
 var text = svg.append("g")
     .attr("class", "labels")
@@ -103,18 +86,22 @@ var text = svg.append("g")
   .enter().append("text")
     .attr("dy", 2)
     .attr("text-anchor", "middle")
-    .text(function(d) {return d.id})
+    .text(function(d) {return "AS" + d.id})
     .attr("fill", "white");
 
-/*
-var title = svg.selectAll("text")
+
+var text2 = svg.append("g")
+    .attr("class", "labels")
+  .selectAll("text")
   .data(graph.nodes)
   .enter().append("text")
-    .attr("y", 4)
+    .attr("dy", -18)
+    .attr("dx", -8)
     .attr("text-anchor", "middle")
-    .text(function(d) {return d.rtt})
+    .text( rtt4 + " ms")
     .attr("fill", "black");
-*/
+
+
 simulation
   .nodes(graph.nodes)
   .on("tick", ticked);
@@ -127,7 +114,7 @@ simulation.force("link")
 
 
 function ticked() {
-    var x = y = z = j = k = m = n = f = 150;
+    var x = y = z = j = k = m = n = f = s = v = 150;
 
   link
       .attr("x1", function(d) { if (d.source.group == 0) return "100"; else if (d.source.group == 9) return "750"; else if (d.source.group == 6) { m+= 110; return m;} else { f+= 110; return f;} })
@@ -142,6 +129,148 @@ function ticked() {
       .attr("x", function(d,i) { if (d.group == 0) return "100"; else if (d.group == 9) return "750"; else if (d.group == 6) { j+= 110; return j;} else { y+= 110; return y;} })
       .attr("y", function(d) { if (d.group == 0 || d.group == 9) return height/2;  else return d.group * 60;});
 
+   text2
+      .attr("x", '130')
+      .attr("y", '290');
+}
+
+
+
+function dragstarted(d) {
+  if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+  d.fx = d.x;
+  d.fy = d.y;
+}
+
+function dragged(d) {
+  d.fx = d3.event.x;
+  d.fy = d3.event.y;
+}
+
+function dragended(d) {
+  if (!d3.event.active) simulation.alphaTarget(0);
+  d.fx = null;
+  d.fy = null;
+}
+
+
+});
+
+
+//-----------------------------
+
+
+$.getJSON( "src/graph.json", function( data ) {
+    var  slinks = [];
+    var arr = jQuery.makeArray(data.route6);
+    var rtt6 = jQuery.makeArray(data.rtt6);
+    var len = arr.length;
+    for (i = 0; i < len; i++) {
+        slinks.push({"source": arr[i]['id'], "target": arr[i]['nexthop'], value: 2});
+    }
+
+
+
+var graph = {nodes: arr, links:slinks};
+
+
+
+var svg = d3.select("svg"),
+    width = +svg.attr("width"),
+    height = +svg.attr("height");
+
+var color = d3.scaleOrdinal(d3.schemeCategory20);
+
+var nd;
+for (var i=0; i<graph.nodes.length; i++) {
+  nd = graph.nodes[i];
+  nd.rx = nd.id.length * 4.5 + 10;
+  nd.ry = 16;
+}
+
+var simulation = d3.forceSimulation()
+    .force("link", d3.forceLink().id(function(d) { return d.id; }))
+    .force("collide", d3.ellipseForce(9,8,6))
+    .force("center", d3.forceCenter(width / 2, height / 2));
+
+var link = svg.append("g")
+    .attr("class", "link")
+  .selectAll("line")
+  .data(graph.links)
+  .enter().append("line")
+    .attr("stroke-width", function(d) { return Math.sqrt(d.value); });
+
+var node = svg.append("g")
+    .attr("class", "node")
+  .selectAll("ellipse")
+  .data(graph.nodes)
+  .enter().append("ellipse")
+    .attr("rx", function(d) {  return d.rx; })
+    .attr("ry", function(d) { return d.ry; })
+    .attr("fill", function(d) {  if (d.group == 4) return "#5f97ef"; else if (d.group == 6) return "#60ea3a"; else return "#fc1e89"; })
+
+    .call(d3.drag()
+        .on("start", dragstarted)
+        .on("drag", dragged)
+        .on("end", dragended));
+
+
+
+
+
+
+var text = svg.append("g")
+    .attr("class", "labels")
+  .selectAll("text")
+  .data(graph.nodes)
+  .enter().append("text")
+    .attr("dy", 2)
+    .attr("text-anchor", "middle")
+    .text(function(d) {return "AS" + d.id})
+    .attr("fill", "white");
+
+
+var text2 = svg.append("g")
+    .attr("class", "labels")
+  .selectAll("text")
+  .data(graph.nodes)
+  .enter().append("text")
+    .attr("dy", -18)
+    .attr("dx", -8)
+    .attr("text-anchor", "middle")
+    .text( rtt6 + " ms")
+    .attr("fill", "black");
+
+
+simulation
+  .nodes(graph.nodes)
+  .on("tick", ticked);
+
+simulation.force("link")
+     .links(graph.links);
+
+
+
+
+
+function ticked() {
+
+  link
+      .attr("x1", function(d) { if (d.source.group == 0) return "100"; else if (d.source.group == 9) return "750"; else if (d.source.group == 6) { m+= 110; return m;} else { f+= 110; return f;} })
+      .attr("y1", function(d) { if (d.source.group == 0 || d.source.group == 9) return height/2;  else return d.source.group * 60; })
+      .attr("x2", function(d) {if (d.target.group == 0) return "100"; else if (d.target.group == 9) return "750"; else if (d.target.group == 6) { k+= 110; return k;} else { n+= 110; return n;} })
+      .attr("y2", function(d) { if (d.target.group == 0 || d.target.group == 9) return height/2;  else return d.target.group * 60; });
+
+  node
+      .attr("cx", function(d,i) { if (d.group == 0) return "100"; else if (d.group == 9) return "750"; else if (d.group == 6) { z+= 110; return z;} else { x+= 110; return x;} })
+      .attr("cy", function(d) { if (d.group == 0 || d.group == 9) return height/2; else return d.group * 60; });
+  text
+      .attr("x", function(d,i) { if (d.group == 0) return "100"; else if (d.group == 9) return "750"; else if (d.group == 6) { j+= 110; return j;} else { y+= 110; return y;} })
+      .attr("y", function(d) { if (d.group == 0 || d.group == 9) return height/2;  else return d.group * 60;});
+
+   text2
+      .attr("x", '130')
+      .attr("y", '350');
 }
 
 function dragstarted(d) {
@@ -163,4 +292,31 @@ function dragended(d) {
 
 
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </script>
