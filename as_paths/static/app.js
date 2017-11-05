@@ -38,13 +38,27 @@ $(document).ready(function() {
     /* Given per-neighbouring-AS statistics for IPv4 and IPv6, returns
      * combined statistics. */
     function merge_statistics(v4_stats, v6_stats) {
-        return _.mapObject(v4_stats, function(stats, asn) {
+        var v4 = _.mapObject(v4_stats, function(stats, asn) {
             return { count_v4: stats.count,
-                     count_v6: v6_stats[asn].count,
-                     average_length_v4: stats.average_length,
-                     average_length_v6: v6_stats[asn].average_length
-                   }
-        })
+                     average_length_v4: stats.average_length };
+        });
+        var v6 = _.mapObject(v6_stats, function(stats, asn) {
+            return { count_v6: stats.count,
+                     average_length_v6: stats.average_length };
+        });
+        var all_asn = _.uniq(_.flatten([_.keys(v4), _.keys(v6)]));
+        var all_asn_object = _.object(all_asn, all_asn);
+        console.log(all_asn);
+        return _.mapObject(all_asn_object, function(asn) {
+            /* Handle ASN that only appears in either v4 or v6 */
+            if (!(asn in v4)) {
+                return v6[asn];
+            } else if (!(asn in v6)) {
+                return v4[asn];
+            } else {
+                return _.extend({}, v4[asn], v6[asn]);
+            }
+        });
     }
 
     function get_data(ipv6_prefix, ipv4_prefix) {
