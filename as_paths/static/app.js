@@ -1,6 +1,6 @@
 $(document).ready(function() {
 
-    average_length = function(as_paths) {
+    function average_length(as_paths) {
         var sum = 0
         for( var i = 0; i < as_paths.length; i++ ){
             sum += as_paths[i].length;
@@ -9,7 +9,7 @@ $(document).ready(function() {
         return avg;
     }
 
-    compute_statistics = function(as_paths) {
+    function compute_statistics(as_paths) {
         var cleaned_as_paths = _.map(as_paths, function(as_path) { return _.uniq(as_path.split(' ')) });
         var groups = _.groupBy(cleaned_as_paths, function(as_path) { return as_path[as_path.length - 2] });
         var groups_stats = _.mapObject(groups, function(as_paths) { return {count: as_paths.length, average_length: average_length(as_paths)} });
@@ -19,6 +19,20 @@ $(document).ready(function() {
         */
         return groups_stats;
     }
+
+    /* Given JSON data from the RIPE API with a list of probes, only keep
+     * probes that have the same IPv4 and IPv6 ASN, and try to pick a
+     * connected probe (by taking the most recently connected one) */
+    function pick_probe(probes_json) {
+        var probes = probes_json.data.probes;
+        probes = _.filter(probes, function(probe) { return probe.asn_v4 == probe.asn_v6 });
+        if (probes.length == 0) {
+            return;
+        } else {
+            return _.max(probes, function(probe) { return probe.last_connected });
+        }
+    }
+
 
     function get_data(prefix, type='ipv4-prefix') {
         $.ajax({
@@ -48,6 +62,16 @@ $(document).ready(function() {
         });
     }
 
+    function get_probes(asn) {
+        $.ajax({
+            url: 'https://stat.ripe.net/data/atlas-probes/data.json?resource=' + asn,
+            dataType: 'json',
+            cache: false
+        }).done(function(json) {
+            console.log(json);
+        });
+    }
+
     $('#form-prefixes button[type="submit"]').on('click', function(e) {
         e.preventDefault();
 
@@ -58,6 +82,20 @@ $(document).ready(function() {
         // // Get IPv6 data
         var ipv6_prefix = $('#ipv6-prefix').val();
         get_data(ipv4_prefix, type='ipv6-prefix');
+    });
+
+    $('#form-asn button[type="submit"]').on('click', function(e) {
+        e.preventDefault();
+
+        // Get ASN data
+        var asn = $('#asn').val();
+        var data = get_probes(asn);
+        var probe = pick_probe(data);
+        if (!probe) {
+            alert("No probe found in this ASN, sorry");
+            return;
+        }
+        // Do something with probe.prefix_v4 and probe.prefix_v6
     });
 
 });
