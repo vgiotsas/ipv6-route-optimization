@@ -126,8 +126,7 @@ $(document).ready(function() {
                 alert("No Atlas probe found in this ASN, sorry");
                 return;
             }
-            console.log(probe);
-            // Do something with probe.prefix_v4 and probe.prefix_v6
+            get_data(probe.prefix_v4, probe.prefix_v6);
         });
     }
 
