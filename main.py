@@ -6,7 +6,7 @@ import csv
 base_url = 'https://atlas.ripe.net/api/v2/'
 probe_limit = 100
 output_csv = 'atlas_measurements.csv'
-interesting_asns = 'interesting_asns'
+interesting_asns = 'data/interesting_asns'
 
 
 def main():

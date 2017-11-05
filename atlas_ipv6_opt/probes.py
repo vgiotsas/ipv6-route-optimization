@@ -2,19 +2,28 @@ import bz2
 import ujson
 import collections
 import random
+import requests
 import os
 from ripe.atlas.cousteau import (
     Traceroute,
     AtlasSource,
     AtlasCreateRequest)
 
+debug = True
+
 # Probe list from http://ftp.ripe.net/ripe/atlas/probes/archive/meta-latest
 probes_file = 'data/20171103.json.bz2'
-
-debug = True
 API_KEY = os.getenv('RIPE_API')
-
+base_url = 'https://atlas.ripe.net/api/v2/'
+cost_per_trace = 6
 wanted_tags = ('system-ipv6-works', 'system-ipv4-works', 'system-ipv4-stable-1d')
+
+
+def check_credits():
+    url = base_url+'credits/?key='+API_KEY
+    r = requests.get(url)
+    atlas_credits = r.json()['current_balance']
+    return atlas_credits
 
 
 def load_json():
@@ -46,33 +55,41 @@ def create_measurements(probes, target):
     and one for the IPv6.
     '''
     num_probes = len(probes)
+    atlas_credits = check_credits()
+    cost = (num_probes * num_probes) * cost_per_trace
+    if debug:
+        print('Estimated cost:%s, Available credits:%s' % (cost, atlas_credits))
+    if cost < atlas_credits:
+        sources = AtlasSource(
+            type='probes',
+            value=','.join(str(x) for x in random.sample(probes, num_probes)),
+            requested=num_probes
+        )
 
-    sources = AtlasSource(
-        type='probes',
-        value=','.join(str(x) for x in random.sample(probes, num_probes)),
-        requested=num_probes
-    )
+        tr4 = Traceroute(
+            af=4,
+            target=target['address_v4'],
+            description='Transient tr4 test',
+            protocol='ICMP'
+        )
 
-    tr4 = Traceroute(
-        af=4,
-        target=target['address_v4'],
-        description='Transient tr4 test',
-        protocol='ICMP'
-    )
+        tr6 = Traceroute(
+            af=6,
+            target=target['address_v6'],
+            description='Transient tr6 test',
+            protocol='ICMP'
+        )
 
-    tr6 = Traceroute(
-        af=6,
-        target=target['address_v6'],
-        description='Transient tr6 test',
-        protocol='ICMP'
-    )
+        atlas_request = AtlasCreateRequest(
+            key=API_KEY,
+            measurements=[tr4, tr6],
+            sources=[sources],
+            is_oneoff=True
+        )
 
-    atlas_request = AtlasCreateRequest(
-        key=API_KEY,
-        measurements=[tr4, tr6],
-        sources=[sources],
-        is_oneoff=True
-    )
+        response = atlas_request.create()
+    else:
+        print('The cost %s would exceed your available credits %s' % (cost, atlas_credits))
+        response = None
 
-    response = atlas_request.create()
     return response
