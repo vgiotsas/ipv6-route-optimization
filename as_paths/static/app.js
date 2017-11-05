@@ -2,6 +2,12 @@ $(document).ready(function() {
 
     google.charts.load('current', {packages: ['corechart', 'bar']});
 
+    function toFixedRobust(number, precision) {
+        if (number) {
+            return number.toFixed(precision);
+        }
+    }
+
     function average_length(as_paths) {
         var sum = 0
         for( var i = 0; i < as_paths.length; i++ ){
@@ -126,8 +132,8 @@ $(document).ready(function() {
                 var data = []
                 data.push(['AS', 'IPv4', {type: 'string', role: 'tooltip'}, 'IPv6', {type: 'string', role: 'tooltip'}]);
                 $.each(as_obj, function(k, v) {
-                    data.push([k, v.average_length_v4, 'Average AS-path length over ' + v.count_v4 + ' AS paths: ' + v.average_length_v4.toFixed(2),
-                               v.average_length_v6, 'Average AS-path length over ' + v.count_v6 + ' AS paths: ' + v.average_length_v6.toFixed(2)]);
+                    data.push([k, v.average_length_v4, 'Average AS-path length over ' + v.count_v4 + ' AS paths: ' + toFixedRobust(v.average_length_v4, 2),
+                               v.average_length_v6, 'Average AS-path length over ' + v.count_v6 + ' AS paths: ' + toFixedRobust(v.average_length_v6, 2)]);
                 });
                 draw_charts(target_asn, data);
             });
