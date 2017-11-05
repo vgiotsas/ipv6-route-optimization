@@ -1,3 +1,23 @@
+average_length = function(as_paths) {
+    var sum = 0
+    for( var i = 0; i < as_paths.length; i++ ){
+        sum += as_paths[i].length;
+    }
+    var avg = sum / as_paths.length;
+    return avg;
+}
+
+compute_statistics = function(as_paths) {
+    var cleaned_as_paths = _.map(as_paths, function(as_path) { return _.uniq(as_path.split(' ')) });
+    var groups = _.groupBy(cleaned_as_paths, function(as_path) { return as_path[as_path.length - 2] });
+    var groups_stats = _.mapObject(groups, function(as_paths) { return {count: as_paths.length, average_length: average_length(as_paths)} });
+    /* { neighbour_AS: {count: <number of AS paths through this neighbour,
+                        average_length: <average length of AS paths through this neighbour>}
+       }
+    */
+    return groups_stats;
+}
+
 $(document).ready(function() {
 
     function get_data(prefix, type='ipv4-prefix') {
