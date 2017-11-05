@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <title>AS statistics</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
     <link rel="stylesheet" href="static/bootstrap.min.css">
     <link rel="stylesheet" href="static/app.css">
   </head>
@@ -12,16 +13,12 @@
 
     <div class="container">
 
-      <div class="row">
-        <div class="col-md-12">
-          <h2>AS statistics</h2>
-        </div>
-      </div>
-
-      <hr>
+      <nav class="navbar navbar-light bg-light">
+        <span class="navbar-brand"><h3>AS statistics</h3></span>
+      </nav>
 
       <div class="card">
-        <div class="card-body">
+        <div class="card-header">
           <p>
             This web application computes and displays statistics about an
             AS, using BGP data from
@@ -42,11 +39,12 @@
             </div>
             <button type="submit" class="btn btn-primary">Compute statistics</button>
           </form>
-          <p>This tool will look
-          for <a href="https://atlas.ripe.net">Atlas probes</a> in the
-          given AS, and use them to compute colocated IPv4 and IPv6
-          prefixes.  It then computes statistics on the BGP reachability
-          of these prefixes.</p>
+          <p class="form-text">
+            This tool will look for <a href="https://atlas.ripe.net">Atlas probes</a> in the
+            given AS, and use them to compute colocated IPv4 and IPv6
+            prefixes.  It then computes statistics on the BGP reachability
+            of these prefixes.
+          </p>
         </div>
       </div>
 
@@ -64,23 +62,23 @@
             </div>
             <button type="submit" class="btn btn-primary">Compute statistics</button>
           </form>
-          <p>This tool will directly compare BGP reachability of the two
-          prefixes.  For a meaningful comparison, they should be
-          "colocated" prefixes, i.e. be announced by the same BGP router.</p>
+          <p class="form-text">
+            This tool will directly compare BGP reachability of the two
+            prefixes.  For a meaningful comparison, they should be
+            "colocated" prefixes, i.e. be announced by the same BGP router
+          </p>
         </div>
       </div>
 
       <hr>
 
-      <div id="ripe-ipv6">
-        
-
-      </div>
+      <div id="chart"></div>
 
     </div>
 
     <script src="static/jquery.min.js"></script>
     <script src="static/underscore-min.js"></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script src="static/app.js"></script>
   </body>
 </html>
